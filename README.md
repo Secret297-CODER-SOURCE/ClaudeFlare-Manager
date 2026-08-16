@@ -1,80 +1,80 @@
 # DEXTER ONE — Cloudflare Manager
 
-Терминальный менеджер для массовой работы с зонами Cloudflare: добавление доменов, чистка DNS, CNAME-шаблоны, поиск фишинговых/забаненных зон и история NS — всё в одном TUI, без веб-панели.
+A terminal manager for bulk Cloudflare zone operations: adding domains, cleaning DNS, CNAME templates, phishing/banned zone detection, and NS history — all in a single TUI, no web dashboard required.
 
 ![DEXTER ONE — Cloudflare Manager](assets/dashboard.png)
 
-## Возможности
+## Features
 
-- **Мультиаккаунтность** — работа сразу с несколькими Cloudflare-аккаунтами (`dex_accounts.json`), с группировкой зон по команде и маскированием API-ключей в интерфейсе.
-- **Добавление зон** — массовая загрузка доменов (`domains.txt`), параллельное создание зон с ограничением конкурентности и живым прогресс-баром.
-- **DNS Cleaner** — пакетная зачистка/нормализация DNS-записей по списку доменов.
-- **CNAME-шаблоны** — управление набором целевых CNAME (`dex_cnames.json`) и применение их к выбранным зонам.
-- **Живые зоны** — таблица всех зон по аккаунтам с фильтрами, поиском, определением фишинга/бана и групповыми действиями (удаление, применение CNAME).
-- **История NS** — лог смен NS-серверов с фильтрацией и экспортом.
-- **Классический режим** — совместимый curses-фолбэк на случай отсутствия Textual или запуска не в tty (`--classic`).
+- **Multi-account** — work across several Cloudflare accounts at once (`dex_accounts.json`), with zones grouped by team and API keys masked in the UI.
+- **Add zones** — bulk-load domains (`domains.txt`), create zones in parallel with configurable concurrency and a live progress bar.
+- **DNS Cleaner** — batch cleanup/normalization of DNS records across a domain list.
+- **CNAME templates** — manage a set of target CNAMEs (`dex_cnames.json`) and apply them to selected zones.
+- **Live zones** — a table of all zones across accounts with filters, search, phishing/ban detection, and bulk actions (delete, apply CNAME).
+- **NS history** — a log of nameserver changes with filtering and export.
+- **Classic mode** — a compatible curses fallback for when Textual is unavailable or the app isn't running in a tty (`--classic`).
 
-## Установка
+## Installation
 
 ```bash
 python3 -m pip install -r requirements.txt
 ```
 
-Требуется Python 3.11+.
+Requires Python 3.11+.
 
-## Запуск
+## Usage
 
 ```bash
 python3 cloudflare_manager.py
 ```
 
-По умолчанию открывается новый TUI на [Textual](https://github.com/Textualize/textual). Принудительно запустить классический curses-интерфейс:
+By default this opens the new [Textual](https://github.com/Textualize/textual)-based TUI. To force the classic curses interface:
 
 ```bash
 python3 cloudflare_manager.py --classic
 ```
 
-## Навигация
+## Navigation
 
-| Клавиша | Раздел |
+| Key | Section |
 | --- | --- |
-| `F1` | Добавить зоны |
+| `F1` | Add zones |
 | `F2` | DNS Cleaner |
-| `F3` | Аккаунты |
+| `F3` | Accounts |
 | `F4` | CNAME |
-| `F5` | Домены |
-| `F6` | История NS |
-| `F7` | Live-зоны |
-| `F8` | Поиск |
-| `Ctrl+R` | Обновить активный экран |
-| `Ctrl+Q` | Выход |
+| `F5` | Domains |
+| `F6` | NS history |
+| `F7` | Live zones |
+| `F8` | Search |
+| `Ctrl+R` | Refresh current screen |
+| `Ctrl+Q` | Quit |
 
-## Структура проекта
+## Project layout
 
 ```
 cf_manager/
-├── tui.py        # Textual-интерфейс: экраны, модалки, панели
-├── services.py   # Клиент Cloudflare API (зоны, DNS, поиск, фишинг)
-├── jobs.py       # Параллельный раннер фоновых заданий с прогрессом
-├── storage.py    # Хранилище аккаунтов, CNAME, доменов и истории NS
-└── models.py     # Датаклассы: Account, Zone, CnameTarget, JobResult/Progress
+├── tui.py        # Textual UI: screens, modals, panels
+├── services.py   # Cloudflare API client (zones, DNS, search, phishing)
+├── jobs.py       # Concurrent background job runner with progress tracking
+├── storage.py    # Storage for accounts, CNAMEs, domains, and NS history
+└── models.py     # Dataclasses: Account, Zone, CnameTarget, JobResult/Progress
 
-cloudflare_manager.py  # Точка входа + классический curses-режим
-tests/                 # pytest-набор для cf_manager
+cloudflare_manager.py  # Entry point + classic curses mode
+tests/                 # pytest suite for cf_manager
 ```
 
-## Данные и конфигурация
+## Data and configuration
 
-Приложение хранит состояние рядом с собой в JSON/txt-файлах:
+The app keeps its state alongside itself in JSON/txt files:
 
-- `dex_accounts.json` — аккаунты Cloudflare (email + API key)
-- `dex_cnames.json` — шаблоны CNAME-целей
-- `domains.txt` / `failed_domains.txt` — списки доменов для обработки
-- `logs/` — журналы сессий
+- `dex_accounts.json` — Cloudflare accounts (email + API key)
+- `dex_cnames.json` — CNAME target templates
+- `domains.txt` / `failed_domains.txt` — domain lists to process
+- `logs/` — session logs
 
-Эти файлы содержат чувствительные данные (API-ключи) — не коммитьте их с реальными значениями.
+These files contain sensitive data (API keys) — don't commit them with real values.
 
-## Тесты
+## Tests
 
 ```bash
 pytest
