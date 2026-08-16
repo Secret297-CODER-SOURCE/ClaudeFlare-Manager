@@ -1,0 +1,8 @@
+aiohttp
+certifi
+requests
+textual
+
+# Development / tests
+pytest
+pytest-asyncio
